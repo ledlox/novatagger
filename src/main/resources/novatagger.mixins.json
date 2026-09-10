@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.novatagger.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+    "MixinPlayerListHud",
+    "MixinPlayerEntity",
+    "MixinChatHud"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

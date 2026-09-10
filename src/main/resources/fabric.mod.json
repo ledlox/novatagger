@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "novatagger",
+  "version": "${version}",
+  "name": "NovaTagger",
+  "description": "Get tiers from the NovaTiers API",
+  "authors": [
+    "Developer"
+  ],
+  "contact": {},
+  "license": "CC0-1.0",
+  "icon": "assets/novatagger/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.novatagger.NovaTaggerMod"
+    ],
+    "client": [
+      "com.novatagger.client.NovaTaggerClient"
+    ],
+    "modmenu": [
+      "com.novatagger.compat.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "novatagger.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.3",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
