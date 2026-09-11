@@ -21,8 +21,8 @@ dependencies {
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     // TierTagger + ukulib: dev-client only, for compatibility testing (not bundled)
-    modLocalRuntime "maven.modrinth:tiertagger:2.4.1+mc1.21.11"
-    modLocalRuntime "maven.modrinth:ukulib:1.10.2+1.21.11"
+    // modLocalRuntime "maven.modrinth:tiertagger:2.4.1+mc1.21.11"
+    // modLocalRuntime "maven.modrinth:ukulib:1.10.2+1.21.11"
 }
 
 processResources {
