@@ -41,9 +41,6 @@ public final class NovaTierCache {
         if (uuid == null) {
             return CompletableFuture.completedFuture(Optional.empty());
         }
-        if (uuid.version() != 4) {
-            return CompletableFuture.completedFuture(Optional.empty());
-        }
         Entry entry = cache.get(uuid);
         if (entry != null && entry.fresh()) {
             return CompletableFuture.completedFuture(entry.info());

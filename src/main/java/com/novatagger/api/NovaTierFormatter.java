@@ -2,6 +2,8 @@ package com.novatagger.api;
 
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.StyleSpriteSource;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,6 +34,34 @@ public final class NovaTierFormatter {
     );
 
     private NovaTierFormatter() {}
+
+    /** Custom font holding the NovaTiers gamemode icons (assets/novatagger/font/nova_icons.json). */
+    public static final Identifier MODE_ICON_FONT = Identifier.of("novatagger", "nova_icons");
+
+    /** Gamemode name -> private-use glyph in MODE_ICON_FONT. Order matches NovaTaggerClient.MODES. */
+    private static final Map<String, String> MODE_GLYPHS = Map.ofEntries(
+            Map.entry("Spear Mace", "\uE000"),
+            Map.entry("Elytra Spear", "\uE001"),
+            Map.entry("Modern SMP", "\uE002"),
+            Map.entry("SMP", "\uE003"),
+            Map.entry("Diamond OP", "\uE004"),
+            Map.entry("Spleef", "\uE005"),
+            Map.entry("Pufferfish", "\uE006"),
+            Map.entry("UHC", "\uE007"),
+            Map.entry("Diamond Cart", "\uE008"),
+            Map.entry("Vanilla", "\uE009"),
+            Map.entry("Axe", "\uE00A"),
+            Map.entry("Elytra", "\uE00B")
+    );
+
+    /** Gamemode icon glyph rendered in the nova_icons font, or empty text when unknown. */
+    public static Text iconText(String mode) {
+        String glyph = MODE_GLYPHS.getOrDefault(mode, "");
+        if (glyph.isEmpty()) {
+            return Text.empty();
+        }
+        return Text.literal(glyph).styled(s -> s.withFont(new StyleSpriteSource.Font(MODE_ICON_FONT)));
+    }
 
     public static int tierColor(String tier, boolean retired) {
         if (retired) {
@@ -68,7 +98,9 @@ public final class NovaTierFormatter {
     /** All modes sorted best-first, retired last (TierTagger getSortedTiers style). */
     public static List<ModeLine> sortedLines(NovaPlayerInfo info) {
         List<ModeLine> lines = new ArrayList<>();
-        for (String mode : info.tiers().keySet()) {
+        java.util.Set<String> modes = new java.util.HashSet<>(info.tiers().keySet());
+        modes.addAll(info.peakTiers().keySet());
+        for (String mode : modes) {
             String tier = info.displayTier(mode);
             if (tier.equals("-")) {
                 continue;
@@ -99,7 +131,12 @@ public final class NovaTierFormatter {
             return out;
         }
         for (ModeLine line : lines) {
-            MutableText msg = Text.literal(line.mode() + ": ").styled(s -> s.withColor(0xFFFFFF));
+            MutableText msg = Text.empty();
+            Text icon = iconText(line.mode());
+            if (!icon.getString().isEmpty()) {
+                msg.append(icon).append(Text.literal(" "));
+            }
+            msg.append(Text.literal(line.mode() + ": ").styled(s -> s.withColor(0xFFFFFF)));
             msg.append(tierText(line.tier(), line.retired()));
             if (showPeak && !line.peak().equals("-") && !line.peak().equalsIgnoreCase(line.tier())) {
                 msg.append(Text.literal(" (peak: " + line.peak() + ")").styled(s -> s.withColor(0x888888)));
@@ -109,9 +146,14 @@ public final class NovaTierFormatter {
         return out;
     }
 
-    /** Compact single-mode tag for nametag/tab/chat: "HT3 | Name". Caller picks mode. */
-    public static MutableText compactTag(String tier, boolean retired, Text name) {
-        MutableText tag = tierText(tier, retired);
+    /** Compact single-mode tag for nametag/tab/chat: "[icon] HT3 | Name". Caller picks mode. */
+    public static MutableText compactTag(String mode, String tier, boolean retired, Text name) {
+        MutableText tag = Text.empty();
+        Text icon = iconText(mode);
+        if (!icon.getString().isEmpty()) {
+            tag.append(icon).append(Text.literal(" "));
+        }
+        tag.append(tierText(tier, retired));
         tag.append(Text.literal(" | ").styled(s -> s.withColor(0x888888)));
         return tag.append(name.copy());
     }

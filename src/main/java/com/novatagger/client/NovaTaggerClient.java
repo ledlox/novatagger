@@ -91,7 +91,7 @@ public class NovaTaggerClient implements ClientModInitializer {
             String mode = MODES.get(modeIndex);
             String tier = info.displayTier(mode);
             if (!tier.equals("-") && (config.showRetired || !info.isRetired(mode))) {
-                return NovaTierFormatter.compactTag(tier, info.isRetired(mode), original);
+                return NovaTierFormatter.compactTag(mode, tier, info.isRetired(mode), original);
             }
             return original;
         }
@@ -105,7 +105,7 @@ public class NovaTaggerClient implements ClientModInitializer {
         if (best == null) {
             return original;
         }
-        return NovaTierFormatter.compactTag(best.tier(), best.retired(), original);
+        return NovaTierFormatter.compactTag(best.mode(), best.tier(), best.retired(), original);
     }
 
     public static String currentModeName() {
