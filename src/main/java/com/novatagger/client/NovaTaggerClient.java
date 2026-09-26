@@ -69,13 +69,16 @@ public class NovaTaggerClient implements ClientModInitializer {
      */
     public static Text appendTier(UUID uuid, Text original, TagSource source) {
         NovaTaggerConfig config = NovaTaggerConfig.get();
+        if (!config.enabled) {
+            return original;
+        }
         if (source == TagSource.TAB && !config.showInTab) {
             return original;
         }
         if (source == TagSource.NAMETAG && !config.showAboveHead) {
             return original;
         }
-        if (source == TagSource.CHAT && !config.showInChat) {
+        if (source == TagSource.CHAT) {
             return original;
         }
         if (tierCache == null || uuid == null) {

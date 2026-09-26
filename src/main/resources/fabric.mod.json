@@ -5,7 +5,8 @@
   "name": "NovaTagger",
   "description": "Get tiers from the NovaTiers API",
   "authors": [
-    "Developer"
+    "ledlox",
+    "domorsmth"
   ],
   "contact": {},
   "license": "CC0-1.0",

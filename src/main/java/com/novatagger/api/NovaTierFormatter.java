@@ -11,27 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Text-only formatting with TierTagger-default colors.
- * TierTagger defaults: HT1 0xebaa3a, LT1 0xd5b355, HT2 0xa4d3e7, LT2 0xa0a7b2,
- * HT3 0xf89f5a, LT3 0xa67b42, HT4 0x81749a, LT4 0x655b79, HT5 0x8f82a8, LT5 0x655b79,
- * retired 0xa2d6fd, fallback 0xD3D3D3.
+ * Text-only formatting with configurable tier colors (Tier Colors tab).
+ * Defaults: HT1 #E8BA3A, LT1 #D5B355, HT2 #C4D3E7, LT2 #A9A7B2,
+ * HT3 #F89F5A, LT3 #C67B42, HT4 #81749A, LT4 #555579, HT5 #9F82A8, LT5 #555579,
+ * retired #A2D6FF, fallback #D3D3D3.
  */
 public final class NovaTierFormatter {
-    public static final int RETIRED_COLOR = 0xa2d6fd;
     public static final int FALLBACK_COLOR = 0xD3D3D3;
-
-    private static final Map<String, Integer> TIER_COLORS = Map.of(
-            "HT1", 0xebaa3a,
-            "LT1", 0xd5b355,
-            "HT2", 0xa4d3e7,
-            "LT2", 0xa0a7b2,
-            "HT3", 0xf89f5a,
-            "LT3", 0xa67b42,
-            "HT4", 0x81749a,
-            "LT4", 0x655b79,
-            "HT5", 0x8f82a8,
-            "LT5", 0x655b79
-    );
 
     private NovaTierFormatter() {}
 
@@ -56,7 +42,9 @@ public final class NovaTierFormatter {
 
     /** Gamemode icon glyph rendered in the nova_icons font, or empty text when unknown. */
     public static Text iconText(String mode) {
-        String glyph = MODE_GLYPHS.getOrDefault(mode, "");
+        if (!com.novatagger.config.NovaTaggerConfig.get().showIcons) {
+            return Text.empty();
+        }        String glyph = MODE_GLYPHS.getOrDefault(mode, "");
         if (glyph.isEmpty()) {
             return Text.empty();
         }
@@ -65,10 +53,7 @@ public final class NovaTierFormatter {
     }
 
     public static int tierColor(String tier, boolean retired) {
-        if (retired) {
-            return RETIRED_COLOR;
-        }
-        return TIER_COLORS.getOrDefault(tier.toUpperCase(), FALLBACK_COLOR);
+        return com.novatagger.config.NovaTaggerConfig.get().getTierColor(tier, retired);
     }
 
     /** Display string with R prefix when retired (e.g. RLT3), like TierTagger. */
@@ -135,7 +120,7 @@ public final class NovaTierFormatter {
             MutableText msg = Text.empty();
             Text icon = iconText(line.mode());
             if (!icon.getString().isEmpty()) {
-                msg.append(icon).append(Text.literal(" "));
+                msg.append(icon);
             }
             msg.append(Text.literal(line.mode() + ": ").styled(s -> s.withColor(0xFFFFFF)));
             msg.append(tierText(line.tier(), line.retired()));
@@ -147,12 +132,12 @@ public final class NovaTierFormatter {
         return out;
     }
 
-    /** Compact single-mode tag for nametag/tab/chat: "[icon] HT3 | Name". Caller picks mode. */
+    /** Compact single-mode tag for nametag/tab/chat: "[icon]HT3 | Name". Caller picks mode. */
     public static MutableText compactTag(String mode, String tier, boolean retired, Text name) {
         MutableText tag = Text.empty();
         Text icon = iconText(mode);
         if (!icon.getString().isEmpty()) {
-            tag.append(icon).append(Text.literal(" "));
+            tag.append(icon);
         }
         tag.append(tierText(tier, retired));
         tag.append(Text.literal(" | ").styled(s -> s.withColor(0x888888)));
