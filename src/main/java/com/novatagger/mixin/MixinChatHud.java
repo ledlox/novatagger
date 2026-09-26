@@ -19,8 +19,19 @@ import java.util.UUID;
  */
 @Mixin(ChatHud.class)
 public class MixinChatHud {
-    @ModifyVariable(method = "addMessage", at = @At("HEAD"), argsOnly = true)
-    private Text tagChatSender(Text message) {
+    // 1-arg overload: system / client feedback messages.
+    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), argsOnly = true)
+    private Text tagSystemSender(Text message) {
+        return tagChatMessage(message);
+    }
+
+    // 3-arg overload: real player chat from the server. This is the one that matters.
+    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At("HEAD"), argsOnly = true)
+    private Text tagPlayerSender(Text message) {
+        return tagChatMessage(message);
+    }
+
+    private Text tagChatMessage(Text message) {
         if (!(message.getContent() instanceof TranslatableTextContent translatable)) {
             return message;
         }

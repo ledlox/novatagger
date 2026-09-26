@@ -60,7 +60,8 @@ public final class NovaTierFormatter {
         if (glyph.isEmpty()) {
             return Text.empty();
         }
-        return Text.literal(glyph).styled(s -> s.withFont(new StyleSpriteSource.Font(MODE_ICON_FONT)));
+        // Explicit white so parent styles (join/leave yellow, team colors) don't bleed in.
+        return Text.literal(glyph).styled(s -> s.withFont(new StyleSpriteSource.Font(MODE_ICON_FONT)).withColor(0xFFFFFF));
     }
 
     public static int tierColor(String tier, boolean retired) {
